@@ -1,0 +1,99 @@
+---
+title: "Bike-Share Demand Analysis"
+author: "Alli Oluwagbenga"
+output: html_document
+---
+
+```{r}
+# Load the package and read the CSV
+library(readr)
+
+bike_day <- read_csv(
+  "Bike Share Demand Analysis/day.csv",
+  show_col_types = FALSE
+)
+
+# Make a copy for analysis
+bike <- bike_day
+
+# Create readable month names
+month_names <- c(
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+)
+
+bike$month_name <- factor(
+  bike$mnth,
+  levels = 1:12,
+  labels = month_names
+)
+
+# Create readable season names
+bike$season <- factor(
+  bike$season,
+  levels = 1:4,
+  labels = c("Winter", "Spring", "Summer", "Fall")
+)
+
+# Create readable weather names
+bike$weather <- factor(
+  bike$weathersit,
+  levels = 1:3,
+  labels = c(
+    "Clear or partly cloudy",
+    "Mist or cloudy",
+    "Rain, snow or storms"
+  )
+)
+```
+
+```{r}
+# Calculate the values used by the charts
+average_by_month <- tapply(bike$cnt, bike$month_name, mean)
+average_by_season <- tapply(bike$cnt, bike$season, mean)
+rider_totals <- c(
+  Casual = sum(bike$casual),
+  Registered = sum(bike$registered)
+)
+average_by_weather <- tapply(bike$cnt, bike$weather, mean)
+```
+
+```{r}
+# Chart 1: Average rentals by month
+barplot(
+  average_by_month[month.abb],
+  names.arg = month.abb,
+  main = "Average Bike Rentals by Month",
+  xlab = "Month",
+  ylab = "Average rentals per day",
+  col = "steelblue"
+)
+
+# Chart 2: Average rentals by season
+barplot(
+  average_by_season,
+  main = "Average Bike Rentals by Season",
+  xlab = "Season",
+  ylab = "Average rentals per day",
+  col = "steelblue"
+)
+
+# Chart 3: Total rentals by rider type
+barplot(
+  rider_totals,
+  main = "Total Rentals by Rider Type",
+  xlab = "Rider type",
+  ylab = "Total rentals",
+  col = "steelblue"
+)
+
+# Chart 4: Average rentals by weather
+barplot(
+  average_by_weather,
+  horiz = TRUE,
+  las = 1,
+  main = "Average Bike Rentals by Weather",
+  xlab = "Average rentals per day",
+  col = "steelblue"
+)
+```
